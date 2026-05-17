@@ -17,13 +17,14 @@ def normalize_import(data: dict) -> dict:
 
     def norm_entry(e):
         return {
-            'id':        e.get('id', ''),
-            'name':      e.get('name', ''),
-            'amount':    e.get('amount'),
-            'next_date': e.get('next_date') or e.get('nextDate', ''),
-            'end_date':  e.get('end_date') or e.get('endDate'),
-            'interval':  e.get('interval', ''),
-            'category':  e.get('category', 'Sonstiges'),
+            'id':          e.get('id', ''),
+            'name':        e.get('name', ''),
+            'amount':      e.get('amount'),
+            'next_date':   e.get('next_date') or e.get('nextDate', ''),
+            'end_date':    e.get('end_date') or e.get('endDate'),
+            'interval':    e.get('interval', ''),
+            'category':    e.get('category', 'Sonstiges'),
+            'loan_details': e.get('loan_details'),
         }
 
     return {
@@ -48,4 +49,19 @@ def validate_import(data) -> tuple[bool, str | None]:
                 return False, f'Eintrag unvollständig: {field} fehlt'
         if not isinstance(entry.get('amount'), (int, float)):
             return False, 'Eintrag unvollständig: amount fehlt oder keine Zahl'
+    for exp in data.get('expenses', []):
+        ld = exp.get('loan_details')
+        if ld is not None:
+            if not isinstance(ld, dict):
+                return False, f'loan_details muss ein Objekt sein bei "{exp.get("name")}"'
+            if not isinstance(ld.get('principal'), (int, float)) or ld.get('principal', 0) <= 0:
+                return False, f'Ungültiges loan_details.principal bei "{exp.get("name")}"'
+            if not isinstance(ld.get('interest_rate'), (int, float)) or ld.get('interest_rate', -1) < 0:
+                return False, f'Ungültiges loan_details.interest_rate bei "{exp.get("name")}"'
+            if not isinstance(ld.get('term_months'), (int, float)) or ld.get('term_months', 0) <= 0:
+                return False, f'Ungültiges loan_details.term_months bei "{exp.get("name")}"'
+            if not ld.get('start_date'):
+                return False, f'loan_details.start_date fehlt bei "{exp.get("name")}"'
+            if not isinstance(ld.get('special_payments'), list):
+                return False, f'loan_details.special_payments kein Array bei "{exp.get("name")}"'
     return True, None

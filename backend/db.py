@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS expenses (
     end_date TEXT,
     interval TEXT NOT NULL CHECK (interval IN ('once','monthly','quarterly','biannual','yearly')),
     category TEXT NOT NULL DEFAULT 'Sonstiges',
+    loan_details TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -60,4 +61,9 @@ def close_db(e=None):
 def init_db():
     db = get_db()
     db.executescript(SCHEMA)
-    db.commit()
+    # Migration: add loan_details to expenses if not present
+    try:
+        db.execute("ALTER TABLE expenses ADD COLUMN loan_details TEXT")
+        db.commit()
+    except Exception:
+        pass  # column already exists

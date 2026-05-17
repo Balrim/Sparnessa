@@ -38,9 +38,10 @@ def register(bp):
                  float(s.get('next_salary_amount', 1800))))
             for e in data['expenses']:
                 db.execute(
-                    "INSERT INTO expenses (id, name, amount, next_date, end_date, interval, category) VALUES (?,?,?,?,?,?,?)",
+                    "INSERT INTO expenses (id, name, amount, next_date, end_date, interval, category, loan_details) VALUES (?,?,?,?,?,?,?,?)",
                     (e['id'], e['name'], e['amount'], e['next_date'],
-                     e.get('end_date'), e['interval'], e.get('category', 'Sonstiges')))
+                     e.get('end_date'), e['interval'], e.get('category', 'Sonstiges'),
+                     json.dumps(e['loan_details']) if e.get('loan_details') else None))
             for i in data.get('incomes', []):
                 db.execute(
                     "INSERT INTO incomes (id, name, amount, next_date, end_date, interval, category) VALUES (?,?,?,?,?,?,?)",

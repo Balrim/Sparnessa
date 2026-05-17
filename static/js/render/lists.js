@@ -18,17 +18,27 @@ function _render(rootId, items, type) {
   const color = type === 'income'
     ? 'background:rgba(48,209,88,0.15);color:var(--green)'
     : 'background:rgba(191,90,242,0.15);color:var(--accent)';
-  root.innerHTML = items.map(e => `
+  root.innerHTML = items.map(e => {
+    const isLoan = type === 'expense' && e.category === 'Darlehen';
+    const meta = isLoan && e.loan_details
+      ? `Darlehen · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtShortDate(e.end_date))}`
+      : `${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || e.interval} · nächst. ${escapeHtml(fmtShortDate(e.next_date))}${e.end_date ? ' · bis ' + escapeHtml(fmtShortDate(e.end_date)) : ''}`;
+    const loanBtn = isLoan
+      ? `<button class="row-action loan-info" data-action="loan-detail" aria-label="Darlehensdetails"><svg width="13" height="13"><use href="#i-info"/></svg></button>`
+      : '';
+    return `
     <div class="v3-mini-item" data-id="${escapeHtml(e.id)}" data-type="${type}">
       <div class="v3-mini-icon" style="${color}"><svg width="16" height="16"><use href="#i-${iconFor(e)}"/></svg></div>
       <div>
         <div class="v3-mini-name">${escapeHtml(e.name)}</div>
-        <div class="v3-mini-meta">${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || e.interval} · nächst. ${escapeHtml(fmtShortDate(e.next_date))}${e.end_date ? ' · bis ' + escapeHtml(fmtShortDate(e.end_date)) : ''}</div>
+        <div class="v3-mini-meta">${meta}</div>
       </div>
       <div class="v3-mini-amount ${type === 'income' ? 'pos' : 'neg'}">${type === 'income' ? '+' : '−'}${escapeHtml(fmtEur(e.amount).replace('−', ''))}</div>
       <div class="row-actions">
+        ${loanBtn}
         <button class="row-action" data-action="edit" aria-label="Bearbeiten"><svg width="13" height="13"><use href="#i-pencil"/></svg></button>
         <button class="row-action danger" data-action="delete" aria-label="Löschen"><svg width="13" height="13"><use href="#i-trash"/></svg></button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }

@@ -8,6 +8,7 @@ import { renderMiniLists} from './render/lists.js';
 import { registerSettingsModal } from './modals/settings.js';
 import { openEntry, registerEntryModal } from './modals/entry.js';
 import { registerResetModal } from './modals/reset.js';
+import { openLoanDetail, registerLoanDetailModal } from './modals/loan-detail.js';
 
 function openModal(id) {
   document.getElementById(id).classList.add('open');
@@ -56,6 +57,7 @@ async function init() {
   registerSettingsModal(openModal, closeModal, showStatus);
   registerEntryModal(openModal, closeModal, showStatus);
   registerResetModal(closeModal);
+  registerLoanDetailModal(closeModal);
 
   document.getElementById('btn-add-expense').addEventListener('click',
     () => openEntry('expense', null, openModal));
@@ -70,8 +72,9 @@ async function init() {
     const { id, type } = row.dataset;
     const btn = e.target.closest('.row-action');
     if (btn) {
-      if (btn.dataset.action === 'edit')   openEntry(type, id, openModal);
-      if (btn.dataset.action === 'delete') _delete(type, id);
+      if (btn.dataset.action === 'edit')        openEntry(type, id, openModal);
+      if (btn.dataset.action === 'loan-detail') openLoanDetail(id, openModal);
+      if (btn.dataset.action === 'delete')      _delete(type, id);
     } else {
       openEntry(type, id, openModal);
     }

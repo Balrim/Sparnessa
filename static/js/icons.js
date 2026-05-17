@@ -1,6 +1,7 @@
 const CATEGORY_ICONS = {
   'Wohnen':'home','Versicherung':'shield','Auto':'car','Lebensmittel':'coffee',
   'Freizeit':'music','Abos':'music','Internet':'wifi','Strom':'bolt','Transfer':'arrow',
+  'Darlehen':'loan',
   'Hauptjob':'bag','Nebenverdienst':'bag','Familie':'heart','Unterhalt':'heart',
   'Sozialleistung':'heart','Rückerstattung':'tag','Sonstiges':'tag',
 };
@@ -50,6 +51,17 @@ export function injectIcons() {
     <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></symbol>
     <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-loan" viewBox="0 0 24 24">
+  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2V9z"
+        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12 10v4M10 12h4"
+        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+</symbol>
+<symbol id="i-info" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.75"/>
+  <line x1="12" y1="8" x2="12" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="12" x2="12" y2="16" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+</symbol>
   </defs>`;
   document.body.prepend(container);
 }
