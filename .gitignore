@@ -1,0 +1,45 @@
+# Persönliche Daten – dürfen NICHT ins Repository
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Umgebungsvariablen & Secrets
+.env
+.env.*
+*.secret
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtuelle Umgebungen
+venv/
+.venv/
+env/
+
+# Tests & Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Editor & OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# Logs & temporäre Dateien
+*.log
+*.tmp
+*.bak

@@ -1,0 +1,55 @@
+/* ═══════════════════════════════════════════════════════════════
+   CHART — SVG balance trajectory
+═══════════════════════════════════════════════════════════════ */
+
+.chart {
+  position: relative;
+  width: 100%;
+}
+.chart svg { display: block; width: 100%; height: auto; }
+
+.chart-grid line { stroke: var(--separator); stroke-dasharray: 2 4; }
+.chart-axis text {
+  fill: var(--label-tertiary);
+  font-size: 10px;
+  font-family: var(--font);
+  font-variant-numeric: tabular-nums;
+}
+.chart-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.chart-area { fill: url(#chartGrad); }
+.chart-dispo {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  opacity: 0.6;
+}
+.chart-zero {
+  fill: none;
+  stroke: var(--separator-strong);
+  stroke-width: 1;
+}
+.chart-dot {
+  fill: var(--bg-base);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.chart-dot-active {
+  fill: var(--accent);
+  stroke: #fff;
+  stroke-width: 2;
+}
+.chart-event-marker {
+  fill: var(--bg-elevated-2);
+  stroke: var(--label-tertiary);
+  stroke-width: 1;
+}
+.chart-salary-marker {
+  fill: var(--green);
+}

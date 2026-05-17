@@ -1,0 +1,68 @@
+/* ═══════════════════════════════════════════════════════════════
+   SPARNESSA — Design Tokens (Apple Dark Mode)
+═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Backgrounds (iOS Dark Mode) */
+  --bg-base: #000000;
+  --bg-elevated: #1c1c1e;
+  --bg-elevated-2: #2c2c2e;
+  --bg-elevated-3: #3a3a3c;
+  --separator: rgba(84, 84, 88, 0.35);
+  --separator-strong: rgba(84, 84, 88, 0.65);
+
+  /* Text */
+  --label-primary: rgba(255, 255, 255, 1);
+  --label-secondary: rgba(235, 235, 245, 0.6);
+  --label-tertiary: rgba(235, 235, 245, 0.3);
+  --label-quaternary: rgba(235, 235, 245, 0.18);
+
+  /* Accent (iOS systemPurple) + Statusfarben */
+  --accent: #BF5AF2;
+  --accent-dim: rgba(191, 90, 242, 0.18);
+  --accent-glow: rgba(191, 90, 242, 0.35);
+  --green: #30D158;
+  --red: #FF453A;
+  --orange: #FF9F0A;
+  --yellow: #FFD60A;
+  --blue: #0A84FF;
+
+  /* Radii (iOS) */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-2xl: 28px;
+
+  /* Type */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  --font-num: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(191, 90, 242, 0.35);
+  color: #fff;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg-base);
+  color: var(--label-primary);
+  font-feature-settings: "cv11", "ss01", "ss03";
+}
