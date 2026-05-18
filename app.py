@@ -39,7 +39,10 @@ def _check_for_update():
     try:
         req = urllib.request.Request(
             "https://api.github.com/repos/Balrim/Sparnessa/releases/latest",
-            headers={"User-Agent": f"Sparnessa/{APP_VERSION}"},
+            headers={
+                "User-Agent": f"Sparnessa/{APP_VERSION}",
+                "Authorization": "token GITHUB_PAT_PLACEHOLDER",
+            },
         )
         with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read().decode())

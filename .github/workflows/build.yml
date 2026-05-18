@@ -46,6 +46,13 @@ jobs:
           $version = $env:TAG -replace '^v', ''
           (Get-Content app.py) -replace '0\.0\.0', $version | Set-Content app.py
 
+      - name: Inject PAT into app.py
+        shell: pwsh
+        env:
+          SPARNESSA_PAT: ${{ secrets.SPARNESSA_PAT }}
+        run: |
+          (Get-Content app.py) -replace 'GITHUB_PAT_PLACEHOLDER', $env:SPARNESSA_PAT | Set-Content app.py
+
       - name: Build EXE
         run: >
           pyinstaller
