@@ -25,6 +25,11 @@ def create_app(config=None):
 
 app = create_app()
 
+@app.route('/api/version')
+def version():
+    from flask import jsonify
+    return jsonify({'version': APP_VERSION})
+
 def _check_for_update():
     import urllib.request
     import urllib.error
