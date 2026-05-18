@@ -17,7 +17,13 @@ def register(bp):
 
         dest = os.path.join(os.path.expanduser('~'), 'Downloads', 'Sparnessa.exe')
         try:
-            urllib.request.urlretrieve(url, dest)
+            headers = {
+                "Authorization": "token GITHUB_PAT_PLACEHOLDER",
+                "Accept": "application/octet-stream",
+            }
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req) as response, open(dest, 'wb') as f:
+                f.write(response.read())
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 

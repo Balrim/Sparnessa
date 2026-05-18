@@ -52,6 +52,7 @@ jobs:
           SPARNESSA_PAT: ${{ secrets.SPARNESSA_PAT }}
         run: |
           (Get-Content app.py) -replace 'GITHUB_PAT_PLACEHOLDER', $env:SPARNESSA_PAT | Set-Content app.py
+          (Get-Content backend/api/update_routes.py) -replace 'GITHUB_PAT_PLACEHOLDER', $env:SPARNESSA_PAT | Set-Content backend/api/update_routes.py
 
       - name: Build EXE
         run: >
