@@ -43,3 +43,6 @@ Thumbs.db
 *.log
 *.tmp
 *.bak
+
+# Claude Code (Worktrees, Sessions, lokale Konfiguration)
+.claude/
