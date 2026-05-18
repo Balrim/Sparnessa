@@ -1,3 +1,11 @@
+import sys
+import os
+
+if getattr(sys, 'frozen', False):
+    devnull = open(os.devnull, 'w')
+    sys.stdout = devnull
+    sys.stderr = devnull
+
 from flask import Flask
 from backend.db import init_db, close_db, get_db_path
 from backend.api import create_blueprint
@@ -16,4 +24,4 @@ def create_app(config=None):
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=False, use_reloader=False, port=5000)
