@@ -190,6 +190,36 @@
   </div>
 </div>
 
+<!-- Typ-Auswahl-Modal -->
+<div class="modal-overlay" id="type-select-modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Neue Ausgabe</div>
+      <button class="modal-close" id="btn-close-type-select" aria-label="Schließen"><svg width="14" height="14"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <button class="type-select-btn" id="btn-type-expense">
+        <div class="type-select-icon">
+          <svg width="18" height="18"><use href="#i-tag"/></svg>
+        </div>
+        <div>
+          <div class="type-select-name">Wiederkehrende Ausgabe</div>
+          <div class="type-select-sub">Miete, Abos, Versicherungen …</div>
+        </div>
+      </button>
+      <button class="type-select-btn" id="btn-type-loan">
+        <div class="type-select-icon accent">
+          <svg width="18" height="18"><use href="#i-loan"/></svg>
+        </div>
+        <div>
+          <div class="type-select-name">Kredit / Darlehen</div>
+          <div class="type-select-sub">Raten, Zinsen, Sondertilgungen …</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Entry Form Modal (shared expenses/incomes) -->
 <div class="modal-overlay" id="entry-modal" role="dialog" aria-modal="true">
   <div class="modal">
@@ -213,68 +243,77 @@
           </select>
         </div>
         <div class="field full"><label for="e-category">Kategorie</label><select id="e-category"></select></div>
-
-        <!-- Darlehen-Bereich: nur sichtbar wenn Kategorie = 'Darlehen' -->
-        <div class="field full loan-section" id="loan-section" style="display:none">
-          <div class="loan-divider">
-            <span>Darlehensdaten</span>
-          </div>
-
-          <!-- Modus-Auswahl -->
-          <div class="seg-ctrl" id="loan-mode-ctrl" style="width:100%;margin-bottom:4px">
-            <button class="seg-btn active" data-val="calculate" type="button">Rate berechnen</button>
-            <button class="seg-btn" data-val="enter" type="button">Rate eingeben</button>
-          </div>
-
-          <div class="form-grid" style="margin-top:2px">
-            <div class="field">
-              <label for="l-principal">Kredithöhe (€)</label>
-              <input type="number" id="l-principal" step="100" min="0" placeholder="200.000" />
-            </div>
-            <div class="field">
-              <label for="l-interest">Zinssatz (% p.a.)</label>
-              <input type="number" id="l-interest" step="0.01" min="0" placeholder="3,50" />
-            </div>
-
-            <!-- Modus A: Laufzeit eingeben → Rate berechnen -->
-            <div class="field" id="l-term-field">
-              <label for="l-term">Laufzeit (Monate)</label>
-              <input type="number" id="l-term" step="1" min="1" placeholder="240" />
-            </div>
-
-            <!-- Modus B: Rate eingeben → Laufzeit berechnen -->
-            <div class="field" id="l-rate-field" style="display:none">
-              <label for="l-rate">Monatsrate (€)</label>
-              <input type="number" id="l-rate" step="0.01" min="0" placeholder="1.159,97" />
-            </div>
-
-            <div class="field">
-              <label for="l-start">Darlehensbeginn</label>
-              <input type="date" id="l-start" />
-            </div>
-          </div>
-
-          <!-- Berechnetes Ergebnis -->
-          <div class="loan-result" id="loan-result" style="display:none">
-            <div class="loan-result-row">
-              <span>Monatsrate</span><strong id="lr-rate">—</strong>
-            </div>
-            <div class="loan-result-row">
-              <span>Laufzeit</span><strong id="lr-term">—</strong>
-            </div>
-            <div class="loan-result-row">
-              <span>Enddatum</span><strong id="lr-end">—</strong>
-            </div>
-            <div class="loan-result-row">
-              <span>Gesamtzinsen</span><strong id="lr-interest">—</strong>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" id="btn-cancel-entry">Abbrechen</button>
       <button class="btn btn-primary" id="btn-save-entry">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- Kredit-Modal -->
+<div class="modal-overlay" id="loan-modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="loan-modal-title">Kredit hinzufügen</div>
+      <button class="modal-close" id="btn-close-loan" aria-label="Schließen"><svg width="14" height="14"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full">
+          <label for="lm-name">Bezeichnung</label>
+          <input type="text" id="lm-name" placeholder="z.B. Autokredit" />
+        </div>
+        <div class="field">
+          <label for="lm-principal">Nettokreditbetrag (€)</label>
+          <input type="number" id="lm-principal" step="100" min="0" placeholder="10.000" />
+        </div>
+        <div class="field">
+          <label for="lm-interest">Effektiver Jahreszins (% p.a.)</label>
+          <input type="number" id="lm-interest" step="0.01" min="0" placeholder="3,50" />
+        </div>
+        <div class="field">
+          <label for="lm-start">Darlehensbeginn</label>
+          <input type="date" id="lm-start" />
+        </div>
+        <div class="field">
+          <label for="lm-next">Nächstes Datum</label>
+          <input type="date" id="lm-next" />
+        </div>
+        <div class="field full">
+          <div class="seg-ctrl" id="lm-mode-ctrl" style="width:100%">
+            <button class="seg-btn active" data-val="calculate" type="button">Laufzeit eingeben</button>
+            <button class="seg-btn" data-val="enter" type="button">Monatsrate eingeben</button>
+          </div>
+        </div>
+        <div class="field full" id="lm-term-field">
+          <label for="lm-term">Laufzeit (Monate)</label>
+          <input type="number" id="lm-term" step="1" min="1" placeholder="24" />
+        </div>
+        <div class="field full" id="lm-rate-field" style="display:none">
+          <label for="lm-rate">Monatsrate (€)</label>
+          <input type="number" id="lm-rate" step="0.01" min="0" placeholder="115,57" />
+        </div>
+      </div>
+      <div class="loan-result" id="lm-result" style="display:none;margin-top:4px">
+        <div class="loan-result-row">
+          <span id="lm-res-calc-label">Monatsrate</span><strong id="lm-res-calc-value">—</strong>
+        </div>
+        <div class="loan-result-row">
+          <span>Enddatum</span><strong id="lm-res-end">—</strong>
+        </div>
+        <div class="loan-result-row">
+          <span>Gesamtzinsen</span><strong id="lm-res-interest">—</strong>
+        </div>
+        <div class="loan-result-row">
+          <span>Gesamtbetrag</span><strong id="lm-res-total">—</strong>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btn-cancel-loan">Abbrechen</button>
+      <button class="btn btn-primary" id="btn-save-loan">Speichern</button>
     </div>
   </div>
 </div>
@@ -318,7 +357,7 @@
       <div class="ld-savings-block" id="ld-savings" style="display:none">
         <svg width="14" height="14"><use href="#i-bolt"/></svg>
         <span>Ersparnis durch Sondertilgungen:</span>
-        <strong id="ld-savings-text">—</strong>
+        <strong id="ld-savings-text" style="margin-left:auto;text-align:right">—</strong>
       </div>
 
       <!-- Sondertilgungen -->

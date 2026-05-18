@@ -587,26 +587,41 @@
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 button:focus-visible { outline-offset: 3px; }
 
-/* ─── Darlehen — Entry-Modal Felder ─── */
-.loan-divider {
+/* ─── Typ-Auswahl-Modal ─── */
+.type-select-btn {
+  width: 100%;
+  background: var(--bg-elevated-2);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: var(--label-tertiary);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 4px;
+  gap: 14px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
 }
-.loan-divider::before,
-.loan-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--separator);
-}
+.type-select-btn:hover { border-color: var(--separator-strong); background: var(--bg-elevated-3); }
 
+.type-select-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-sm);
+  background: var(--bg-elevated-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--label-secondary);
+}
+.type-select-icon.accent { background: var(--accent-dim); color: var(--accent); }
+.type-select-icon svg { width: 18px; height: 18px; }
+
+.type-select-name { font-size: 15px; font-weight: 600; color: var(--label-primary); }
+.type-select-sub  { font-size: 13px; color: var(--label-secondary); margin-top: 2px; }
+
+/* ─── Darlehen — Berechnungsvorschau ─── */
 .loan-result {
   background: var(--bg-elevated-2);
   border-radius: var(--r-md);

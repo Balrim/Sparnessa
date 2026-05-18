@@ -1,6 +1,6 @@
 export const CATEGORIES = [
   'Wohnen','Versicherung','Auto','Lebensmittel','Freizeit',
-  'Abos','Internet','Strom','Transfer','Darlehen','Sonstiges',
+  'Abos','Internet','Strom','Transfer','Sonstiges',
 ];
 export const INCOME_CATEGORIES = [
   'Hauptjob','Nebenverdienst','Familie','Unterhalt',

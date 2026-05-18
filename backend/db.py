@@ -1,6 +1,16 @@
 import os
+import sys
 import sqlite3
 from flask import g, current_app
+
+
+def get_db_path() -> str:
+    if sys.platform == 'win32':
+        base = os.path.join(os.path.expanduser('~'), 'Documents', 'FinanzenApp')
+    else:
+        base = os.path.join(os.path.expanduser('~'), '.local', 'share', 'FinanzenApp')
+    os.makedirs(base, exist_ok=True)
+    return os.path.join(base, 'sparnessa.db')
 
 SCHEMA = """
 PRAGMA user_version = 1;

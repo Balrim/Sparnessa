@@ -2,14 +2,14 @@
 
 export function calculateMonthlyRate(principal, annualInterestRate, termMonths) {
   if (annualInterestRate === 0) return principal / termMonths;
-  const r = annualInterestRate / 12 / 100;
+  const r = Math.pow(1 + annualInterestRate / 100, 1/12) - 1;
   return principal * (r * Math.pow(1 + r, termMonths)) / (Math.pow(1 + r, termMonths) - 1);
 }
 
 export function calculateTermFromRate(principal, annualInterestRate, monthlyRate) {
-  if (annualInterestRate === 0) return Math.ceil(principal / monthlyRate);
-  const r = annualInterestRate / 12 / 100;
-  return Math.ceil(-Math.log(1 - r * principal / monthlyRate) / Math.log(1 + r));
+  if (annualInterestRate === 0) return Math.round(principal / monthlyRate);
+  const r = Math.pow(1 + annualInterestRate / 100, 1/12) - 1;
+  return Math.round(-Math.log(1 - r * principal / monthlyRate) / Math.log(1 + r));
 }
 
 export function calculateEndDate(startDate, termMonths) {
@@ -36,12 +36,12 @@ function _buildAmortizationSchedule(loanDetails) {
   let debt = principal;
   const sorted = [...specialPayments].sort((a, b) => a.date.localeCompare(b.date));
 
-  for (let i = 0; i < maxMonths && debt > 0.005; i++) {
+  for (let i = 1; i <= maxMonths && debt > 0.005; i++) {
     const d = new Date(startDate);
     d.setMonth(d.getMonth() + i);
     const monthStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 
-    const interest = interestRate === 0 ? 0 : debt * (interestRate / 12 / 100);
+    const interest = interestRate === 0 ? 0 : debt * (Math.pow(1 + interestRate / 100, 1/12) - 1);
     const principalPaid = Math.min(monthlyRate - interest, debt);
     debt = Math.max(0, debt - principalPaid);
 
@@ -69,11 +69,18 @@ export function calculateRemainingDebt(loanDetails, referenceDate) {
 }
 
 export function calculateTotalInterest(loanDetails) {
+  if (loanDetails.rate_mode === 'enter')
+    return (loanDetails.amount * loanDetails.term_months) - loanDetails.principal;
   return _buildAmortizationSchedule(loanDetails).reduce((sum, e) => sum + e.interest, 0);
 }
 
 export function calculateRemainingTerm(loanDetails, referenceDate) {
   return _buildAmortizationSchedule(loanDetails).filter(e => e.month > referenceDate).length;
+}
+
+export function calculatePayoffDate(loanDetails) {
+  const schedule = _buildAmortizationSchedule(loanDetails);
+  return schedule.length > 0 ? schedule[schedule.length - 1].month : loanDetails.start_date;
 }
 
 export function calculateSpecialPaymentSavings(loanDetails) {

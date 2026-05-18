@@ -1,5 +1,6 @@
 import { fmtEur, fmtShortDate, escapeHtml, INTERVAL_LABELS } from '../format.js';
 import { iconFor } from '../icons.js';
+import { calculatePayoffDate } from '../loan.js';
 
 export function renderMiniLists(state) {
   const expensesSorted = [...state.expenses].sort((a, b) => b.amount - a.amount);
@@ -20,14 +21,15 @@ function _render(rootId, items, type) {
     : 'background:rgba(191,90,242,0.15);color:var(--accent)';
   root.innerHTML = items.map(e => {
     const isLoan = type === 'expense' && e.category === 'Darlehen';
+    const loanEndDate = isLoan && e.loan_details ? calculatePayoffDate(e.loan_details) : e.end_date;
     const meta = isLoan && e.loan_details
-      ? `Darlehen · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtShortDate(e.end_date))}`
+      ? `Kredit · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtShortDate(loanEndDate))}`
       : `${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || e.interval} · nächst. ${escapeHtml(fmtShortDate(e.next_date))}${e.end_date ? ' · bis ' + escapeHtml(fmtShortDate(e.end_date)) : ''}`;
     const loanBtn = isLoan
       ? `<button class="row-action loan-info" data-action="loan-detail" aria-label="Darlehensdetails"><svg width="13" height="13"><use href="#i-info"/></svg></button>`
       : '';
     return `
-    <div class="v3-mini-item" data-id="${escapeHtml(e.id)}" data-type="${type}">
+    <div class="v3-mini-item" data-id="${escapeHtml(e.id)}" data-type="${type}"${isLoan ? ' data-loan="true"' : ''}>
       <div class="v3-mini-icon" style="${color}"><svg width="16" height="16"><use href="#i-${iconFor(e)}"/></svg></div>
       <div>
         <div class="v3-mini-name">${escapeHtml(e.name)}</div>

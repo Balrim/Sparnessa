@@ -1,3 +1,4 @@
+'use strict';
 import { injectIcons } from './icons.js';
 import { state, subscribe, refresh } from './state.js';
 import { api } from './api.js';
@@ -9,6 +10,7 @@ import { registerSettingsModal } from './modals/settings.js';
 import { openEntry, registerEntryModal } from './modals/entry.js';
 import { registerResetModal } from './modals/reset.js';
 import { openLoanDetail, registerLoanDetailModal } from './modals/loan-detail.js';
+import { openLoan, registerLoanModal } from './modals/loan.js';
 
 function openModal(id) {
   document.getElementById(id).classList.add('open');
@@ -58,11 +60,24 @@ async function init() {
   registerEntryModal(openModal, closeModal, showStatus);
   registerResetModal(closeModal);
   registerLoanDetailModal(closeModal);
+  registerLoanModal(openModal, closeModal, showStatus);
+
+  // Typ-Auswahl-Modal
+  document.getElementById('btn-close-type-select').addEventListener('click',
+    () => closeModal('type-select-modal'));
+  document.getElementById('btn-type-expense').addEventListener('click', () => {
+    closeModal('type-select-modal');
+    openEntry('expense', null, openModal);
+  });
+  document.getElementById('btn-type-loan').addEventListener('click', () => {
+    closeModal('type-select-modal');
+    openLoan(null, openModal);
+  });
 
   document.getElementById('btn-add-expense').addEventListener('click',
-    () => openEntry('expense', null, openModal));
+    () => openModal('type-select-modal'));
   document.getElementById('btn-add-expense-2').addEventListener('click',
-    () => openEntry('expense', null, openModal));
+    () => openModal('type-select-modal'));
   document.getElementById('btn-add-income').addEventListener('click',
     () => openEntry('income', null, openModal));
 
@@ -70,13 +85,18 @@ async function init() {
     const row = e.target.closest('.v3-mini-item');
     if (!row) return;
     const { id, type } = row.dataset;
+    const isLoan = row.dataset.loan === 'true';
     const btn = e.target.closest('.row-action');
     if (btn) {
-      if (btn.dataset.action === 'edit')        openEntry(type, id, openModal);
+      if (btn.dataset.action === 'edit') {
+        if (isLoan) openLoan(id, openModal);
+        else        openEntry(type, id, openModal);
+      }
       if (btn.dataset.action === 'loan-detail') openLoanDetail(id, openModal);
       if (btn.dataset.action === 'delete')      _delete(type, id);
     } else {
-      openEntry(type, id, openModal);
+      if (isLoan) openLoan(id, openModal);
+      else        openEntry(type, id, openModal);
     }
   });
 

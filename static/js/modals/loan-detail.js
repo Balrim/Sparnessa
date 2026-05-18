@@ -1,11 +1,13 @@
 import { state, refresh } from '../state.js';
 import { api } from '../api.js';
 import { fmtEur, fmtShortDate, isoToday } from '../format.js';
+import { initCustomDatePicker } from '../custom-datepicker.js';
 import {
   calculateRemainingDebt,
   calculateTotalInterest,
   calculateRemainingTerm,
   calculateSpecialPaymentSavings,
+  calculatePayoffDate,
 } from '../loan.js';
 
 let _activeLoanId = null;
@@ -31,6 +33,12 @@ export function registerLoanDetailModal(closeFn) {
     .addEventListener('click', _confirmSp);
 }
 
+function _fmtDate(iso) {
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 function _render(exp) {
   const ld      = exp.loan_details;
   const today   = isoToday();
@@ -38,13 +46,14 @@ function _render(exp) {
   const total   = calculateTotalInterest(ld);
   const remTerm = calculateRemainingTerm(ld, today);
   const savings = calculateSpecialPaymentSavings(ld);
+  const payoff  = calculatePayoffDate(ld);
 
   document.getElementById('ld-title').textContent    = exp.name;
   document.getElementById('ld-debt').textContent     = fmtEur(debt);
   document.getElementById('ld-rate').textContent     = fmtEur(exp.amount);
   document.getElementById('ld-term').textContent     = `${remTerm} Monate`;
   document.getElementById('ld-interest').textContent = fmtEur(total);
-  document.getElementById('ld-end').textContent      = fmtShortDate(exp.end_date);
+  document.getElementById('ld-end').textContent      = _fmtDate(payoff);
 
   const sorted = [...(ld.special_payments || [])].sort((a, b) => a.date.localeCompare(b.date));
   const spList = document.getElementById('ld-sp-list');
@@ -52,7 +61,7 @@ function _render(exp) {
     ? '<div class="ld-empty">Keine Sondertilgungen eingetragen</div>'
     : sorted.map((sp, i) => `
         <div class="ld-sp-item">
-          <span class="ld-sp-date">${fmtShortDate(sp.date)}</span>
+          <span class="ld-sp-date">${fmtShortDate(sp.date)}${sp.date.slice(2,4)}</span>
           <span class="ld-sp-amount">${fmtEur(sp.amount)}</span>
           <button class="row-action danger" data-sp-idx="${i}" aria-label="Löschen">
             <svg width="12" height="12"><use href="#i-trash"/></svg>
@@ -66,8 +75,8 @@ function _render(exp) {
   const savingsEl = document.getElementById('ld-savings');
   if (savings.saved_months > 0 || savings.saved_interest > 0) {
     savingsEl.style.display = '';
-    document.getElementById('ld-savings-text').textContent =
-      `−${savings.saved_months} Monat${savings.saved_months !== 1 ? 'e' : ''} · −${fmtEur(savings.saved_interest)} Zinsen`;
+    document.getElementById('ld-savings-text').innerHTML =
+      `−${savings.saved_months} Monat${savings.saved_months !== 1 ? 'e' : ''} · −${fmtEur(savings.saved_interest)} Zinsen<br>neues Ende: ${_fmtDate(payoff)}`;
   } else {
     savingsEl.style.display = 'none';
   }
@@ -78,8 +87,10 @@ function _render(exp) {
 function _showSpForm() {
   document.getElementById('ld-sp-form').style.display = '';
   document.getElementById('btn-add-sp').style.display = 'none';
-  document.getElementById('sp-date').value   = isoToday();
   document.getElementById('sp-amount').value = '';
+  const spDateEl = document.getElementById('sp-date');
+  spDateEl.value = isoToday();
+  initCustomDatePicker(spDateEl);
 }
 
 function _hideSpForm() {
