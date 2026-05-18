@@ -10,6 +10,8 @@ from flask import Flask
 from backend.db import init_db, close_db, get_db_path
 from backend.api import create_blueprint
 
+APP_VERSION = "0.0.0"
+
 def create_app(config=None):
     app = Flask(__name__)
     app.config['DATABASE'] = get_db_path()
@@ -23,12 +25,47 @@ def create_app(config=None):
 
 app = create_app()
 
+def _check_for_update():
+    import urllib.request
+    import urllib.error
+    import json
+    from backend import update_state
+
+    try:
+        req = urllib.request.Request(
+            "https://api.github.com/repos/Balrim/Sparnessa/releases/latest",
+            headers={"User-Agent": f"Sparnessa/{APP_VERSION}"},
+        )
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            data = json.loads(resp.read().decode())
+
+        tag = data.get("tag_name", "").lstrip("v")
+        download_url = next(
+            (a["browser_download_url"] for a in data.get("assets", [])
+             if a["browser_download_url"].endswith(".exe")),
+            None,
+        )
+
+        if tag and tag > APP_VERSION:
+            update_state.state.update({
+                "checked": True,
+                "available": True,
+                "version": tag,
+                "download_url": download_url,
+            })
+        else:
+            update_state.state["checked"] = True
+    except Exception:
+        update_state.state["checked"] = True
+
 if __name__ == '__main__':
     if getattr(sys, 'frozen', False):
         import threading
         import webbrowser
         import pystray
         from PIL import Image, ImageDraw
+
+        threading.Thread(target=_check_for_update, daemon=True).start()
 
         def run_flask():
             app.run(debug=False, use_reloader=False, port=5000)

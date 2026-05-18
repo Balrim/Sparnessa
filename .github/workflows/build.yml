@@ -38,6 +38,14 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      - name: Inject version into app.py
+        shell: pwsh
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          $version = $env:TAG -replace '^v', ''
+          (Get-Content app.py) -replace '0\.0\.0', $version | Set-Content app.py
+
       - name: Build EXE
         run: >
           pyinstaller

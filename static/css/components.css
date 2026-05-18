@@ -724,3 +724,48 @@ button:focus-visible { outline-offset: 3px; }
 .row-action.loan-info:hover {
   color: var(--label-primary);
 }
+
+/* ─── Update Banner ─── */
+.update-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--separator-strong);
+  border-radius: var(--r-lg);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--label-primary);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 200;
+  white-space: nowrap;
+  max-width: calc(100vw - 48px);
+}
+.update-banner svg { color: var(--blue); flex-shrink: 0; }
+.update-btn {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.update-btn:disabled { opacity: 0.6; cursor: default; }
+.update-dismiss {
+  background: none;
+  border: none;
+  color: var(--label-tertiary);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 2px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.update-dismiss:hover { color: var(--label-secondary); }

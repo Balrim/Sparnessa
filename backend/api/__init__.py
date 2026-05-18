@@ -12,11 +12,13 @@ def create_blueprint():
     from backend.api.incomes_routes  import register as reg_incomes
     from backend.api.forecast_routes import register as reg_forecast
     from backend.api.data_routes     import register as reg_data
+    from backend.api.update_routes   import register as reg_update
 
     reg_settings(bp)
     reg_expenses(bp)
     reg_incomes(bp)
     reg_forecast(bp)
     reg_data(bp)
+    reg_update(bp)
 
     return bp

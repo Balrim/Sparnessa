@@ -11,6 +11,7 @@ import { openEntry, registerEntryModal } from './modals/entry.js';
 import { registerResetModal } from './modals/reset.js';
 import { openLoanDetail, registerLoanDetailModal } from './modals/loan-detail.js';
 import { openLoan, registerLoanModal } from './modals/loan.js';
+import { initUpdateBanner } from './update.js';
 
 function openModal(id) {
   document.getElementById(id).classList.add('open');
@@ -116,6 +117,7 @@ async function init() {
   });
 
   await refresh();
+  initUpdateBanner();
 
   if (!state.settings.next_salary_date && !state.expenses.length && !state.incomes.length)
     setTimeout(() => openModal('settings-modal'), 350);
