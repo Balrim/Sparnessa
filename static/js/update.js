@@ -6,7 +6,8 @@ export function initUpdateBanner() {
   const btnDl   = document.getElementById('btn-download-update');
   const btnDism = document.getElementById('btn-dismiss-update');
 
-  async function check() {
+  async function poll(attemptsLeft = 15) {
+    if (attemptsLeft <= 0) return;
     let info;
     try {
       const res = await fetch('/api/update-info');
@@ -14,10 +15,14 @@ export function initUpdateBanner() {
     } catch {
       return;
     }
-    if (!info.available) return;
-
-    label.textContent = `Neue Version verfügbar (v${info.version}) — Jetzt updaten`;
-    banner.style.display = 'flex';
+    if (!info.checked) {
+      setTimeout(() => poll(attemptsLeft - 1), 1000);
+      return;
+    }
+    if (info.available) {
+      label.textContent = `Neue Version verfügbar (v${info.version}) — Jetzt updaten`;
+      banner.style.display = 'flex';
+    }
   }
 
   btnDl.addEventListener('click', async () => {
@@ -46,6 +51,5 @@ export function initUpdateBanner() {
     banner.style.display = 'none';
   });
 
-  // Kurze Verzögerung damit Flask/Update-Thread Zeit hat
-  setTimeout(check, 3000);
+  setTimeout(() => poll(), 1000);
 }
