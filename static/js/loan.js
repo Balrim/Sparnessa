@@ -69,6 +69,7 @@ export function calculateRemainingDebt(loanDetails, referenceDate) {
 }
 
 export function calculateTotalInterest(loanDetails) {
+  if (loanDetails.interest_rate === 0) return 0;
   if (loanDetails.rate_mode === 'enter')
     return (loanDetails.amount * loanDetails.term_months) - loanDetails.principal;
   return _buildAmortizationSchedule(loanDetails).reduce((sum, e) => sum + e.interest, 0);
