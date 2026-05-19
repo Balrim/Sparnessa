@@ -15,7 +15,21 @@ def get_settings() -> dict:
     if row is None:
         return dict(DEFAULTS, current_date=date.today().isoformat())
     settings = dict(row)
+    settings = _advance_date_if_needed(settings)
     return _advance_salary_if_needed(settings)
+
+
+def _advance_date_if_needed(settings: dict) -> dict:
+    current = settings.get('current_date')
+    today = date.today().isoformat()
+    if not current or current >= today:
+        return settings
+    get_db().execute(
+        "UPDATE settings SET current_date = ?, updated_at = datetime('now') WHERE id = 1",
+        (today,)
+    )
+    get_db().commit()
+    return {**settings, 'current_date': today}
 
 def _advance_salary_if_needed(settings: dict) -> dict:
     current = settings.get('current_date')
