@@ -21,22 +21,29 @@ function _render(rootId, items, type) {
     : 'background:rgba(191,90,242,0.15);color:var(--accent)';
   const today = isoToday();
   root.innerHTML = items.map(e => {
-    const isLoan = type === 'expense' && e.category === 'Darlehen';
-    const loanEndDate = isLoan && e.loan_details ? calculatePayoffDate(e.loan_details) : e.end_date;
+    const isLoan         = type === 'expense' && e.category === 'Darlehen';
+    const isIncomeLoan   = type === 'income'  && e.category === 'Privatdarlehen';
+    const hasLoan        = isLoan || isIncomeLoan;
+    const loanEndDate    = hasLoan && e.loan_details ? calculatePayoffDate(e.loan_details) : e.end_date;
     const meta = isLoan && e.loan_details
       ? `Kredit · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtShortDate(loanEndDate))}`
-      : `${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || e.interval} · nächst. ${escapeHtml(fmtShortDate(e.next_date))}${e.end_date ? ' · bis ' + escapeHtml(fmtShortDate(e.end_date)) : ''}`;
+      : isIncomeLoan && e.loan_details
+        ? `Privatdarlehen · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtShortDate(loanEndDate))}`
+        : `${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || e.interval} · nächst. ${escapeHtml(fmtShortDate(e.next_date))}${e.end_date ? ' · bis ' + escapeHtml(fmtShortDate(e.end_date)) : ''}`;
     const loanBtn = isLoan
       ? `<button class="row-action loan-info" data-action="loan-detail" aria-label="Darlehensdetails"><svg width="13" height="13"><use href="#i-info"/></svg></button>`
-      : '';
+      : isIncomeLoan
+        ? `<button class="row-action income-loan-info" data-action="income-loan-detail" aria-label="Privatdarlehensdetails"><svg width="13" height="13"><use href="#i-info"/></svg></button>`
+        : '';
     let progressBar = '';
-    if (isLoan && e.loan_details) {
+    if (hasLoan && e.loan_details) {
       const remaining = calculateRemainingDebt(e.loan_details, today);
       const pct = Math.min(100, Math.max(0, (1 - remaining / e.loan_details.principal) * 100));
-      progressBar = `<div class="loan-progress-bar"><div class="loan-progress-fill" style="width:${pct.toFixed(1)}%"></div></div>`;
+      const cls = isIncomeLoan ? 'loan-progress-bar income' : 'loan-progress-bar';
+      progressBar = `<div class="${cls}"><div class="loan-progress-fill" style="width:${pct.toFixed(1)}%"></div></div>`;
     }
     return `
-    <div class="v3-mini-item" data-id="${escapeHtml(e.id)}" data-type="${type}"${isLoan ? ' data-loan="true"' : ''}>
+    <div class="v3-mini-item" data-id="${escapeHtml(e.id)}" data-type="${type}"${isLoan ? ' data-loan="true"' : ''}${isIncomeLoan ? ' data-income-loan="true"' : ''}>
       <div class="v3-mini-icon" style="${color}"><svg width="16" height="16"><use href="#i-${iconFor(e)}"/></svg></div>
       <div>
         <div class="v3-mini-name">${escapeHtml(e.name)}</div>

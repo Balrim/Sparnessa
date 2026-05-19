@@ -2,6 +2,7 @@ const CATEGORY_ICONS = {
   'Wohnen':'home','Versicherung':'shield','Auto':'car','Lebensmittel':'coffee',
   'Freizeit':'music','Abos':'music','Internet':'wifi','Strom':'bolt','Transfer':'arrow',
   'Darlehen':'loan',
+  'Privatdarlehen':'loan',
   'Hauptjob':'bag','Nebenverdienst':'bag','Familie':'heart','Unterhalt':'heart',
   'Sozialleistung':'heart','Rückerstattung':'tag','Sonstiges':'tag',
 };

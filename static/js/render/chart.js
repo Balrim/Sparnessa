@@ -1,4 +1,4 @@
-import { fmtEurCompact, fmtDay } from '../format.js';
+import { fmtEurCompact, fmtEur, fmtDay, escapeHtml } from '../format.js';
 
 export function renderChart(state) {
   const container = document.getElementById('chart-container');
@@ -66,13 +66,33 @@ export function renderChart(state) {
 
   const dots = pts.map((p, i) => {
     if (i === 0) return '';
-    const cls = p.kind === 'salary' ? 'chart-salary-marker' : 'chart-dot';
-    return `<circle cx="${xp(p.date)}" cy="${yp(p.balance)}" r="${p.kind === 'salary' ? 5 : 3.5}" class="${cls}"/>`;
+    const cls = p.kind === 'salary' ? 'chart-salary-marker'
+              : p.kind === 'income' ? 'chart-income-marker'
+              : 'chart-dot';
+    const r   = p.kind === 'salary' ? 5 : p.kind === 'income' ? 4 : 3.5;
+    return `<circle cx="${xp(p.date)}" cy="${yp(p.balance)}" r="${r}" class="${cls}"/>`;
   }).join('');
 
-  // Show only today + salary markers — guaranteed no overlap
-  const xTicks = pts
-    .filter(p => p.kind === 'today' || p.kind === 'salary')
+  // Invisible hit targets — larger radius for easy hover, index references pts array
+  const hits = pts.map((p, i) => {
+    if (i === 0) return '';
+    return `<circle cx="${xp(p.date)}" cy="${yp(p.balance)}" r="14" class="chart-hit" data-idx="${i}"/>`;
+  }).join('');
+
+  // x-axis: today + salary (high priority) + income dates, skip labels too close together
+  const MIN_LABEL_GAP = 52;
+  const tickCandidates = [
+    ...pts.filter(p => p.kind === 'today' || p.kind === 'salary'),
+    ...pts.filter(p => p.kind === 'income'),
+  ];
+  const placedX = [];
+  const xTicks = tickCandidates
+    .filter(p => {
+      const x = xp(p.date);
+      if (placedX.some(px => Math.abs(px - x) < MIN_LABEL_GAP)) return false;
+      placedX.push(x);
+      return true;
+    })
     .map(p => `<text x="${xp(p.date)}" y="${H - pad.b + 18}" text-anchor="middle">${fmtDay(p.date)}</text>`)
     .join('');
 
@@ -102,5 +122,70 @@ export function renderChart(state) {
     <path class="chart-line" d="${line}" clip-path="url(#chartClip)"/>
     ${dots}
     <circle cx="${xp(pts[0].date)}" cy="${yp(pts[0].balance)}" r="5" class="chart-dot-active"/>
+    ${hits}
   </svg>`;
+
+  _initTooltip(container, pts, W, H);
+}
+
+function _initTooltip(container, pts, W, H) {
+  const tip = document.createElement('div');
+  tip.className = 'chart-tooltip';
+  container.appendChild(tip);
+
+  const svg = container.querySelector('svg');
+
+  container.querySelectorAll('.chart-hit').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      const i    = parseInt(el.dataset.idx);
+      const p    = pts[i];
+      const prev = pts[i - 1];
+      const delta = p.balance - prev.balance;
+      const pos   = delta >= 0;
+      const kindLabel = p.kind === 'salary' ? 'Gehalt'
+                      : p.kind === 'income' ? 'Einnahme'
+                      : 'Ausgabe';
+
+      tip.innerHTML = `
+        <div class="ct-name">${escapeHtml(p.label || kindLabel)}</div>
+        <div class="ct-amt ${pos ? 'pos' : 'neg'}">${escapeHtml(fmtEur(delta, { sign: true }))}</div>
+        <div class="ct-div"></div>
+        <div class="ct-row">
+          <span class="ct-lbl">Datum</span>
+          <span class="ct-val">${fmtDay(p.date)}</span>
+        </div>
+        <div class="ct-row">
+          <span class="ct-lbl">Stand danach</span>
+          <span class="ct-val">${fmtEur(p.balance)}</span>
+        </div>`;
+
+      tip.style.display = 'block';
+
+      // Convert SVG coordinate to container-relative pixels
+      const svgRect = svg.getBoundingClientRect();
+      const cRect   = container.getBoundingClientRect();
+      const scaleX  = svgRect.width / W;
+      const scaleY  = svgRect.height / H;
+      const cx = parseFloat(el.getAttribute('cx'));
+      const cy = parseFloat(el.getAttribute('cy'));
+      const px = (svgRect.left - cRect.left) + cx * scaleX;
+      const py = (svgRect.top  - cRect.top)  + cy * scaleY;
+
+      const TW = tip.offsetWidth;
+      const TH = tip.offsetHeight;
+
+      let left = px - TW / 2;
+      left = Math.max(4, Math.min(left, cRect.width - TW - 4));
+
+      // Show above the point; flip below if too close to top
+      const top = py - TH - 10 < 0 ? py + 14 : py - TH - 10;
+
+      tip.style.left = `${left}px`;
+      tip.style.top  = `${top}px`;
+    });
+
+    el.addEventListener('mouseleave', () => {
+      tip.style.display = 'none';
+    });
+  });
 }

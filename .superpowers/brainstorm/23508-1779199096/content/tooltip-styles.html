@@ -1,0 +1,254 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  body { background: #000; font-family: 'Inter', -apple-system, system-ui, sans-serif; color: #fff; padding: 32px 24px 48px; }
+
+  h2 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: rgba(235,235,245,0.5); margin-bottom: 32px; }
+
+  .cards { display: flex; flex-direction: column; gap: 20px; }
+  .card {
+    background: #1c1c1e;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color .18s;
+  }
+  .card:hover { border-color: rgba(191,90,242,0.4); }
+  .card.selected { border-color: #BF5AF2; }
+  .card.selected .card-letter { background: #BF5AF2; }
+
+  .card-top { display: flex; align-items: stretch; }
+  .card-letter {
+    width: 44px; min-width: 44px;
+    background: #2c2c2e;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: rgba(235,235,245,0.5);
+    transition: background .18s;
+  }
+  .card-meta { padding: 14px 16px 14px; flex: 1; }
+  .card-meta h3 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .card-meta p { font-size: 12px; color: rgba(235,235,245,0.45); line-height: 1.4; }
+
+  .preview {
+    padding: 0 16px 20px 16px;
+    background: #111;
+    position: relative;
+  }
+
+  /* ── SHARED CHART BG ── */
+  .chart-bg {
+    width: 100%;
+    height: 120px;
+    position: relative;
+    border-radius: 8px;
+    overflow: visible;
+  }
+  .chart-bg svg { width: 100%; height: 100%; }
+
+  /* ── TOOLTIP A: Pill ── */
+  .tt-pill {
+    position: absolute;
+    background: rgba(44,44,46,0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(84,84,88,0.4);
+    border-radius: 20px;
+    padding: 5px 11px;
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    pointer-events: none;
+  }
+  .tt-pill .tt-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .tt-pill .tt-name { color: rgba(235,235,245,0.7); font-weight: 400; }
+  .tt-pill .tt-amt { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* ── TOOLTIP B: Card ── */
+  .tt-card {
+    position: absolute;
+    background: rgba(44,44,46,0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(84,84,88,0.35);
+    border-radius: 12px;
+    padding: 10px 13px;
+    width: 148px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.6);
+    pointer-events: none;
+  }
+  .tt-card .tc-name { font-size: 12px; font-weight: 500; color: rgba(235,235,245,0.55); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tt-card .tc-amt  { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.3px; line-height: 1; margin-bottom: 6px; }
+  .tt-card .tc-row  { display: flex; justify-content: space-between; align-items: center; }
+  .tt-card .tc-label { font-size: 10px; color: rgba(235,235,245,0.3); text-transform: uppercase; letter-spacing: .4px; }
+  .tt-card .tc-val   { font-size: 11px; font-variant-numeric: tabular-nums; color: rgba(235,235,245,0.55); }
+  .tt-card .tc-div   { height: 1px; background: rgba(84,84,88,0.3); margin: 6px 0; }
+
+  /* ── TOOLTIP C: Popover with arrow ── */
+  .tt-pop {
+    position: absolute;
+    background: rgba(58,58,60,0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(84,84,88,0.3);
+    border-radius: 10px;
+    padding: 8px 12px;
+    width: 138px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.55);
+    pointer-events: none;
+  }
+  .tt-pop::after {
+    content: '';
+    position: absolute;
+    bottom: -6px; left: 50%;
+    transform: translateX(-50%);
+    width: 10px; height: 6px;
+    background: rgba(58,58,60,0.97);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+  .tt-pop .tp-header { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .tt-pop .tp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .tt-pop .tp-name { font-size: 12px; font-weight: 500; color: rgba(235,235,245,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tt-pop .tp-grid  { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; }
+  .tt-pop .tp-lbl   { font-size: 10px; color: rgba(235,235,245,0.35); line-height: 1.6; }
+  .tt-pop .tp-val   { font-size: 10px; font-variant-numeric: tabular-nums; color: rgba(235,235,245,0.65); text-align: right; line-height: 1.6; }
+  .tp-val.pos { color: #30D158; }
+  .tp-val.neg { color: #FF453A; }
+
+  .pos { color: #30D158; }
+  .neg { color: #FF453A; }
+</style>
+
+<h2>Tooltip-Design für Chart-Punkte</h2>
+<p class="subtitle">Wie soll der Tooltip beim Hovern über einem Datenpunkt aussehen?</p>
+
+<div class="cards">
+
+  <!-- OPTION A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-top">
+      <div class="card-letter">A</div>
+      <div class="card-meta">
+        <h3>Kompakte Pill</h3>
+        <p>Nur Name + Betrag — bleibt im Sichtfeld, kaum Ablenkung</p>
+      </div>
+    </div>
+    <div class="preview">
+      <div class="chart-bg">
+        <svg viewBox="0 0 340 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#BF5AF2" stop-opacity=".22"/>
+              <stop offset="100%" stop-color="#BF5AF2" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M20 75 C 60 75, 80 55, 110 55 C 140 55, 150 70, 180 70 C 210 70, 230 30, 260 30 C 290 30, 300 40, 320 38"
+                fill="none" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 75 C 60 75, 80 55, 110 55 C 140 55, 150 70, 180 70 C 210 70, 230 30, 260 30 C 290 30, 300 40, 320 38 L320 90 L20 90 Z"
+                fill="url(#gA)"/>
+          <!-- dots -->
+          <circle cx="110" cy="55" r="3.5" fill="#000" stroke="#BF5AF2" stroke-width="2"/>
+          <circle cx="180" cy="70" r="3.5" fill="#000" stroke="#BF5AF2" stroke-width="2"/>
+          <circle cx="260" cy="30" r="4" fill="#000" stroke="#30D158" stroke-width="2"/>
+          <circle cx="320" cy="38" r="5" fill="#30D158"/>
+          <!-- active dot -->
+          <circle cx="260" cy="30" r="4" fill="#000" stroke="#30D158" stroke-width="2.5"/>
+        </svg>
+        <!-- pill tooltip over income dot -->
+        <div class="tt-pill" style="left: calc(260/340 * 100% - 58px); top: 2px;">
+          <div class="tt-dot" style="background:#30D158"></div>
+          <span class="tt-name">Nebenjob</span>
+          <span class="tt-amt pos">+350 €</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-top">
+      <div class="card-letter">B</div>
+      <div class="card-meta">
+        <h3>Info-Karte</h3>
+        <p>Name, Betrag prominent + Datum + Kontostand danach</p>
+      </div>
+    </div>
+    <div class="preview">
+      <div class="chart-bg">
+        <svg viewBox="0 0 340 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#BF5AF2" stop-opacity=".22"/>
+              <stop offset="100%" stop-color="#BF5AF2" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M20 75 C 60 75, 80 55, 110 55 C 140 55, 150 70, 180 70 C 210 70, 230 30, 260 30 C 290 30, 300 40, 320 38"
+                fill="none" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 75 C 60 75, 80 55, 110 55 C 140 55, 150 70, 180 70 C 210 70, 230 30, 260 30 C 290 30, 300 40, 320 38 L320 90 L20 90 Z"
+                fill="url(#gB)"/>
+          <circle cx="110" cy="55" r="3.5" fill="#000" stroke="#BF5AF2" stroke-width="2"/>
+          <circle cx="180" cy="70" r="3.5" fill="#000" stroke="#BF5AF2" stroke-width="2"/>
+          <circle cx="260" cy="30" r="4" fill="#000" stroke="#30D158" stroke-width="2.5"/>
+          <circle cx="320" cy="38" r="5" fill="#30D158"/>
+        </svg>
+        <div class="tt-card" style="left: calc(260/340 * 100% - 148px + 8px); top: -8px;">
+          <div class="tc-name">Nebenjob</div>
+          <div class="tc-amt pos">+350,00 €</div>
+          <div class="tc-div"></div>
+          <div class="tc-row">
+            <span class="tc-label">Datum</span>
+            <span class="tc-val">12. Jun</span>
+          </div>
+          <div class="tc-row">
+            <span class="tc-label">Stand danach</span>
+            <span class="tc-val">1.240 €</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-top">
+      <div class="card-letter">C</div>
+      <div class="card-meta">
+        <h3>Popover mit Pfeil</h3>
+        <p>Klassischer Tooltip-Pfeil zeigt direkt auf den Punkt</p>
+      </div>
+    </div>
+    <div class="preview">
+      <div class="chart-bg">
+        <svg viewBox="0 0 340 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="gC" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#BF5AF2" stop-opacity=".22"/>
+              <stop offset="100%" stop-color="#BF5AF2" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M20 75 C 60 75, 80 55, 110 55 C 140 55, 150 70, 180 70 C 210 70, 230 30, 260 30 C 290 30, 300 40, 320 38"
+                fill="none" stroke="#BF5AF2" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 75 C 60 75, 80 55, 110 55 C 140 55, 150 70, 180 70 C 210 70, 230 30, 260 30 C 290 30, 300 40, 320 38 L320 90 L20 90 Z"
+                fill="url(#gC)"/>
+          <circle cx="110" cy="55" r="3.5" fill="#000" stroke="#BF5AF2" stroke-width="2"/>
+          <circle cx="180" cy="70" r="3.5" fill="#000" stroke="#BF5AF2" stroke-width="2"/>
+          <circle cx="260" cy="30" r="4" fill="#000" stroke="#30D158" stroke-width="2.5"/>
+          <circle cx="320" cy="38" r="5" fill="#30D158"/>
+        </svg>
+        <div class="tt-pop" style="left: calc(260/340 * 100% - 69px); top: -74px;">
+          <div class="tp-header">
+            <div class="tp-dot" style="background:#30D158"></div>
+            <div class="tp-name">Nebenjob</div>
+          </div>
+          <div class="tp-grid">
+            <span class="tp-lbl">Betrag</span>   <span class="tp-val pos">+350 €</span>
+            <span class="tp-lbl">Datum</span>    <span class="tp-val">12. Jun</span>
+            <span class="tp-lbl">Stand</span>    <span class="tp-val">1.240 €</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

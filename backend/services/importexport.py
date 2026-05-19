@@ -49,19 +49,25 @@ def validate_import(data) -> tuple[bool, str | None]:
                 return False, f'Eintrag unvollständig: {field} fehlt'
         if not isinstance(entry.get('amount'), (int, float)):
             return False, 'Eintrag unvollständig: amount fehlt oder keine Zahl'
-    for exp in data.get('expenses', []):
-        ld = exp.get('loan_details')
-        if ld is not None:
-            if not isinstance(ld, dict):
-                return False, f'loan_details muss ein Objekt sein bei "{exp.get("name")}"'
-            if not isinstance(ld.get('principal'), (int, float)) or ld.get('principal', 0) <= 0:
-                return False, f'Ungültiges loan_details.principal bei "{exp.get("name")}"'
-            if not isinstance(ld.get('interest_rate'), (int, float)) or ld.get('interest_rate', -1) < 0:
-                return False, f'Ungültiges loan_details.interest_rate bei "{exp.get("name")}"'
-            if not isinstance(ld.get('term_months'), (int, float)) or ld.get('term_months', 0) <= 0:
-                return False, f'Ungültiges loan_details.term_months bei "{exp.get("name")}"'
-            if not ld.get('start_date'):
-                return False, f'loan_details.start_date fehlt bei "{exp.get("name")}"'
-            if not isinstance(ld.get('special_payments'), list):
-                return False, f'loan_details.special_payments kein Array bei "{exp.get("name")}"'
+    def _validate_loan_details(ld, name):
+        if ld is None:
+            return None
+        if not isinstance(ld, dict):
+            return f'loan_details muss ein Objekt sein bei "{name}"'
+        if not isinstance(ld.get('principal'), (int, float)) or ld.get('principal', 0) <= 0:
+            return f'Ungültiges loan_details.principal bei "{name}"'
+        if not isinstance(ld.get('interest_rate'), (int, float)) or ld.get('interest_rate', -1) < 0:
+            return f'Ungültiges loan_details.interest_rate bei "{name}"'
+        if not isinstance(ld.get('term_months'), (int, float)) or ld.get('term_months', 0) <= 0:
+            return f'Ungültiges loan_details.term_months bei "{name}"'
+        if not ld.get('start_date'):
+            return f'loan_details.start_date fehlt bei "{name}"'
+        if not isinstance(ld.get('special_payments'), list):
+            return f'loan_details.special_payments kein Array bei "{name}"'
+        return None
+
+    for entry in [*data.get('expenses', []), *data.get('incomes', [])]:
+        err = _validate_loan_details(entry.get('loan_details'), entry.get('name', ''))
+        if err:
+            return False, err
     return True, None

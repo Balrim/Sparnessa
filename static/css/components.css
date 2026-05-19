@@ -616,6 +616,7 @@ button:focus-visible { outline-offset: 3px; }
   color: var(--label-secondary);
 }
 .type-select-icon.accent { background: var(--accent-dim); color: var(--accent); }
+.type-select-icon.green  { background: rgba(48, 209, 88, 0.15); color: var(--green); }
 .type-select-icon svg { width: 18px; height: 18px; }
 
 .type-select-name { font-size: 15px; font-weight: 600; color: var(--label-primary); }
@@ -673,6 +674,7 @@ button:focus-visible { outline-offset: 3px; }
   letter-spacing: -0.02em;
 }
 .ld-stat-value.neg { color: var(--red); }
+.ld-stat-value.pos { color: var(--green); }
 .ld-stat-value.num { color: var(--accent); }
 
 .ld-savings-block {
@@ -724,6 +726,12 @@ button:focus-visible { outline-offset: 3px; }
 .row-action.loan-info:hover {
   color: var(--label-primary);
 }
+.row-action.income-loan-info {
+  color: var(--green);
+}
+.row-action.income-loan-info:hover {
+  color: var(--label-primary);
+}
 
 /* ─── Darlehen — Tilgungs-Fortschrittsbalken ─── */
 .loan-progress-bar {
@@ -740,6 +748,12 @@ button:focus-visible { outline-offset: 3px; }
   background: linear-gradient(90deg, rgba(191, 90, 242, 0.38) 0%, rgba(191, 90, 242, 0.62) 100%);
   border-radius: 0 1px 1px 0;
   transition: width 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.loan-progress-bar.income {
+  background: rgba(48, 209, 88, 0.07);
+}
+.loan-progress-bar.income .loan-progress-fill {
+  background: linear-gradient(90deg, rgba(48, 209, 88, 0.38) 0%, rgba(48, 209, 88, 0.62) 100%);
 }
 
 /* ─── Update Banner ─── */

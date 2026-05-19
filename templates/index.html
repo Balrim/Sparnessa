@@ -405,6 +405,175 @@
   </div>
 </div>
 
+<!-- Einnahmen: Typ-Auswahl-Modal -->
+<div class="modal-overlay" id="income-type-select-modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Neue Einnahme</div>
+      <button class="modal-close" id="btn-close-income-type-select" aria-label="Schließen"><svg width="14" height="14"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <button class="type-select-btn" id="btn-income-type-regular">
+        <div class="type-select-icon green">
+          <svg width="18" height="18"><use href="#i-bag"/></svg>
+        </div>
+        <div>
+          <div class="type-select-name">Wiederkehrende Einnahme</div>
+          <div class="type-select-sub">Gehalt, Mieteinnamen, Renten …</div>
+        </div>
+      </button>
+      <button class="type-select-btn" id="btn-income-type-loan">
+        <div class="type-select-icon green">
+          <svg width="18" height="18"><use href="#i-loan"/></svg>
+        </div>
+        <div>
+          <div class="type-select-name">Privatdarlehen</div>
+          <div class="type-select-sub">Rückzahlungen, Zinsforderungen …</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Privatdarlehen-Modal (Einnahmen) -->
+<div class="modal-overlay" id="income-loan-modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="income-loan-modal-title">Privatdarlehen hinzufügen</div>
+      <button class="modal-close" id="btn-close-income-loan" aria-label="Schließen"><svg width="14" height="14"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full">
+          <label for="ilm-name">Bezeichnung</label>
+          <input type="text" id="ilm-name" placeholder="z.B. Darlehen an Max" />
+        </div>
+        <div class="field">
+          <label for="ilm-principal">Darlehensbetrag (€)</label>
+          <input type="number" id="ilm-principal" step="100" min="0" placeholder="5.000" />
+        </div>
+        <div class="field">
+          <label for="ilm-interest">Zinssatz (% p.a.)</label>
+          <input type="number" id="ilm-interest" step="0.01" min="0" placeholder="0" />
+        </div>
+        <div class="field">
+          <label for="ilm-start">Darlehensbeginn</label>
+          <input type="date" id="ilm-start" />
+        </div>
+        <div class="field">
+          <label for="ilm-next">Nächste Rate</label>
+          <input type="date" id="ilm-next" />
+        </div>
+        <div class="field full">
+          <div class="seg-ctrl" id="ilm-mode-ctrl" style="width:100%">
+            <button class="seg-btn active" data-val="calculate" type="button">Laufzeit eingeben</button>
+            <button class="seg-btn" data-val="enter" type="button">Monatsrate eingeben</button>
+          </div>
+        </div>
+        <div class="field full" id="ilm-term-field">
+          <label for="ilm-term">Laufzeit (Monate)</label>
+          <input type="number" id="ilm-term" step="1" min="1" placeholder="24" />
+        </div>
+        <div class="field full" id="ilm-rate-field" style="display:none">
+          <label for="ilm-rate">Monatsrate (€)</label>
+          <input type="number" id="ilm-rate" step="0.01" min="0" placeholder="208,33" />
+        </div>
+      </div>
+      <div class="loan-result" id="ilm-result" style="display:none;margin-top:4px">
+        <div class="loan-result-row">
+          <span id="ilm-res-calc-label">Monatsrate</span><strong id="ilm-res-calc-value">—</strong>
+        </div>
+        <div class="loan-result-row">
+          <span>Enddatum</span><strong id="ilm-res-end">—</strong>
+        </div>
+        <div class="loan-result-row">
+          <span>Gesamtzinsen</span><strong id="ilm-res-interest">—</strong>
+        </div>
+        <div class="loan-result-row">
+          <span>Gesamtbetrag</span><strong id="ilm-res-total">—</strong>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btn-cancel-income-loan">Abbrechen</button>
+      <button class="btn btn-primary" id="btn-save-income-loan">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- Privatdarlehen-Detail-Modal (Einnahmen) -->
+<div class="modal-overlay" id="income-loan-detail-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <div class="modal-title" id="ild-title">Privatdarlehen</div>
+      <button class="modal-close" id="btn-close-income-loan-detail" aria-label="Schließen">
+        <svg width="14" height="14"><use href="#i-close"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="ld-stats">
+        <div class="ld-stat">
+          <span class="ld-stat-label">Ausstehend heute</span>
+          <span class="ld-stat-value num" id="ild-debt">—</span>
+        </div>
+        <div class="ld-stat">
+          <span class="ld-stat-label">Monatsrate</span>
+          <span class="ld-stat-value" id="ild-rate">—</span>
+        </div>
+        <div class="ld-stat">
+          <span class="ld-stat-label">Verbleibend</span>
+          <span class="ld-stat-value" id="ild-term">—</span>
+        </div>
+        <div class="ld-stat">
+          <span class="ld-stat-label">Gesamtzinsen</span>
+          <span class="ld-stat-value pos" id="ild-interest">—</span>
+        </div>
+        <div class="ld-stat">
+          <span class="ld-stat-label">Enddatum</span>
+          <span class="ld-stat-value" id="ild-end">—</span>
+        </div>
+      </div>
+
+      <div class="ld-savings-block" id="ild-savings" style="display:none">
+        <svg width="14" height="14"><use href="#i-bolt"/></svg>
+        <span>Ersparnis durch Sonderzahlungen:</span>
+        <strong id="ild-savings-text" style="margin-left:auto;text-align:right">—</strong>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:10px">Sonderzahlungen</div>
+        <div id="ild-sp-list"></div>
+
+        <div id="ild-sp-form" style="display:none">
+          <div class="form-grid" style="margin-top:10px">
+            <div class="field">
+              <label for="ild-sp-date">Datum</label>
+              <input type="date" id="ild-sp-date" />
+            </div>
+            <div class="field">
+              <label for="ild-sp-amount">Betrag (€)</label>
+              <input type="number" id="ild-sp-amount" step="100" min="0" placeholder="1.000" />
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+            <button class="btn btn-ghost" id="btn-cancel-ild-sp">Abbrechen</button>
+            <button class="btn btn-primary" id="btn-confirm-ild-sp">Hinzufügen</button>
+          </div>
+        </div>
+
+        <button class="btn btn-ghost" id="btn-add-ild-sp" style="margin-top:8px;width:100%">
+          <svg width="14" height="14"><use href="#i-plus"/></svg> Sonderzahlung eintragen
+        </button>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btn-close-income-loan-detail-foot">Schließen</button>
+    </div>
+  </div>
+</div>
+
 <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

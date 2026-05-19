@@ -1,30 +1,47 @@
+import json
 import uuid
 from backend.db import get_db
 
+def _row_to_dict(row) -> dict:
+    d = dict(row)
+    raw = d.get('loan_details')
+    if raw:
+        try:
+            d['loan_details'] = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            d['loan_details'] = None
+    else:
+        d['loan_details'] = None
+    return d
+
 def get_all() -> list[dict]:
     rows = get_db().execute("SELECT * FROM incomes ORDER BY next_date").fetchall()
-    return [dict(r) for r in rows]
+    return [_row_to_dict(r) for r in rows]
 
 def get_by_id(entry_id: str) -> dict | None:
     row = get_db().execute("SELECT * FROM incomes WHERE id = ?", (entry_id,)).fetchone()
-    return dict(row) if row else None
+    return _row_to_dict(row) if row else None
 
 def create(data: dict) -> dict:
     entry_id = str(uuid.uuid4())
+    loan_details = data.get('loan_details')
     get_db().execute(
-        "INSERT INTO incomes (id, name, amount, next_date, end_date, interval, category) "
-        "VALUES (:id, :name, :amount, :next_date, :end_date, :interval, :category)",
-        {**data, 'id': entry_id, 'end_date': data.get('end_date') or None}
+        "INSERT INTO incomes (id, name, amount, next_date, end_date, interval, category, loan_details) "
+        "VALUES (:id, :name, :amount, :next_date, :end_date, :interval, :category, :loan_details)",
+        {**data, 'id': entry_id, 'end_date': data.get('end_date') or None,
+         'loan_details': json.dumps(loan_details) if loan_details is not None else None}
     )
     get_db().commit()
     return get_by_id(entry_id)
 
 def update(entry_id: str, data: dict) -> dict | None:
+    loan_details = data.get('loan_details')
     get_db().execute(
         "UPDATE incomes SET name=:name, amount=:amount, next_date=:next_date, "
-        "end_date=:end_date, interval=:interval, category=:category, updated_at=datetime('now') "
-        "WHERE id=:id",
-        {**data, 'id': entry_id, 'end_date': data.get('end_date') or None}
+        "end_date=:end_date, interval=:interval, category=:category, loan_details=:loan_details, "
+        "updated_at=datetime('now') WHERE id=:id",
+        {**data, 'id': entry_id, 'end_date': data.get('end_date') or None,
+         'loan_details': json.dumps(loan_details) if loan_details is not None else None}
     )
     get_db().commit()
     return get_by_id(entry_id)
