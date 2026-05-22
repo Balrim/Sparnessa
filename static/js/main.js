@@ -113,8 +113,14 @@ async function init() {
       }
       if (btn.dataset.action === 'loan-detail')        openLoanDetail(id, openModal);
       if (btn.dataset.action === 'income-loan-detail') openIncomeLoanDetail(id, openModal);
+      if (btn.dataset.action === 'loan-done-info') {
+        const panel = document.getElementById(`ldp-${id}`);
+        if (panel) panel.classList.toggle('open');
+        e.stopPropagation();
+      }
       if (btn.dataset.action === 'delete')             _delete(type, id);
     } else {
+      if (row.classList.contains('loan-done')) return;
       if (isLoan)            openLoan(id, openModal);
       else if (isIncomeLoan) openIncomeLoan(id, openModal);
       else                   openEntry(type, id, openModal);
