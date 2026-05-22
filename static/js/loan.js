@@ -95,3 +95,11 @@ export function calculateSpecialPaymentSavings(loanDetails) {
     ),
   };
 }
+
+export function calculateCurrentPayment(loanDetails, referenceDate) {
+  const schedule = _buildAmortizationSchedule(loanDetails);
+  const ym = referenceDate.slice(0, 7); // "YYYY-MM"
+  const entry = schedule.find(e => e.month.slice(0, 7) === ym);
+  if (!entry) return loanDetails.amount;
+  return entry.interest + entry.principal_paid;
+}
