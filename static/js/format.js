@@ -42,6 +42,11 @@ export function fmtShortDate(iso) {
   return `${d}.${m}.`;
 }
 
+export function fmtMonthYear(iso) {
+  if (!iso) return '—';
+  return _toDate(iso).toLocaleDateString('de-DE', { month: 'short', year: 'numeric' });
+}
+
 export function daysBetween(isoA, isoB) {
   return Math.round((_toDate(isoB) - _toDate(isoA)) / 86_400_000);
 }
