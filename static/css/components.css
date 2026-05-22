@@ -756,6 +756,71 @@ button:focus-visible { outline-offset: 3px; }
   background: linear-gradient(90deg, rgba(48, 209, 88, 0.38) 0%, rgba(48, 209, 88, 0.62) 100%);
 }
 
+/* ─── Darlehen — Abgeschlossen ─── */
+.loan-done-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(48, 209, 88, 0.12);
+  color: #30D158;
+  border-radius: 20px;
+  padding: 4px 11px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.loan-done-badge svg { width: 12px; height: 12px; }
+
+.v3-mini-item.loan-done .row-actions { opacity: 1; }
+
+.loan-done-panel {
+  padding: 0 18px 12px;
+  display: none;
+}
+.loan-done-panel.open { display: block; }
+.loan-done-panel-inner {
+  background: var(--bg-elevated-2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(48, 209, 88, 0.18);
+}
+.ldp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+}
+.ldp-row { display: flex; flex-direction: column; gap: 2px; }
+.ldp-label { font-size: 11px; color: var(--label-tertiary); }
+.ldp-value {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ldp-value.green  { color: #30D158; }
+.ldp-value.red    { color: #FF453A; }
+.ldp-value.accent { color: var(--accent); }
+.ldp-divider {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--separator);
+}
+.ldp-sp-section { grid-column: 1 / -1; }
+.ldp-sp-title {
+  font-size: 11px;
+  color: var(--label-tertiary);
+  margin-bottom: 5px;
+}
+.ldp-sp-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 3px 0;
+}
+.ldp-sp-item + .ldp-sp-item { border-top: 1px solid var(--separator); }
+.ldp-sp-date { color: var(--label-secondary); }
+.ldp-sp-amt  { font-weight: 600; color: #30D158; }
+
 /* ─── Update Banner ─── */
 .update-banner {
   position: fixed;
