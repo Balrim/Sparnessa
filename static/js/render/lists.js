@@ -1,3 +1,4 @@
+'use strict';
 import { fmtEur, fmtShortDate, fmtMonthYear, escapeHtml, INTERVAL_LABELS, isoToday } from '../format.js';
 import { iconFor } from '../icons.js';
 import { calculatePayoffDate, calculateRemainingDebt, calculateCurrentPayment, calculateTotalInterest } from '../loan.js';
@@ -82,7 +83,7 @@ function _render(rootId, items, type) {
       ? `Kredit · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtMonthYear(loanEndDate))}`
       : isIncomeLoan && e.loan_details
         ? `Privatdarlehen · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtMonthYear(loanEndDate))}`
-        : `${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || e.interval}${e.end_date ? ' · bis ' + escapeHtml(fmtMonthYear(e.end_date)) : ''}`;
+        : `${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || escapeHtml(e.interval)}${e.end_date ? ' · bis ' + escapeHtml(fmtMonthYear(e.end_date)) : ''}`;
     const remaining = hasLoan && e.loan_details
       ? calculateRemainingDebt(e.loan_details, today) : null;
     const isPaidOff = hasLoan && e.loan_details && remaining <= 0.01;
