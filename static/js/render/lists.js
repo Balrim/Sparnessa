@@ -1,4 +1,4 @@
-import { fmtEur, fmtShortDate, escapeHtml, INTERVAL_LABELS, isoToday } from '../format.js';
+import { fmtEur, fmtShortDate, fmtMonthYear, escapeHtml, INTERVAL_LABELS, isoToday } from '../format.js';
 import { iconFor } from '../icons.js';
 import { calculatePayoffDate, calculateRemainingDebt } from '../loan.js';
 
@@ -26,10 +26,10 @@ function _render(rootId, items, type) {
     const hasLoan        = isLoan || isIncomeLoan;
     const loanEndDate    = hasLoan && e.loan_details ? calculatePayoffDate(e.loan_details) : e.end_date;
     const meta = isLoan && e.loan_details
-      ? `Kredit · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtShortDate(loanEndDate))}`
+      ? `Kredit · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtMonthYear(loanEndDate))}`
       : isIncomeLoan && e.loan_details
-        ? `Privatdarlehen · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtShortDate(loanEndDate))}`
-        : `${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || e.interval} · nächst. ${escapeHtml(fmtShortDate(e.next_date))}${e.end_date ? ' · bis ' + escapeHtml(fmtShortDate(e.end_date)) : ''}`;
+        ? `Privatdarlehen · ${escapeHtml(fmtEur(e.loan_details.principal, {}))} · ${escapeHtml(String(e.loan_details.interest_rate))}% · bis ${escapeHtml(fmtMonthYear(loanEndDate))}`
+        : `${escapeHtml(e.category || '')} · ${INTERVAL_LABELS[e.interval] || e.interval}${e.end_date ? ' · bis ' + escapeHtml(fmtMonthYear(e.end_date)) : ''}`;
     const loanBtn = isLoan
       ? `<button class="row-action loan-info" data-action="loan-detail" aria-label="Darlehensdetails"><svg width="13" height="13"><use href="#i-info"/></svg></button>`
       : isIncomeLoan
