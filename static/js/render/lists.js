@@ -117,7 +117,7 @@ function _render(rootId, items, type) {
       ? `<svg width="16" height="16"><use href="#i-check"/></svg>`
       : `<svg width="16" height="16"><use href="#i-${iconFor(e)}"/></svg>`;
     const metaEl = isPaidOff
-      ? `<div class="v3-mini-meta" style="color:#30D158;opacity:0.85">Vollständig abbezahlt · ${escapeHtml(fmtMonthYear(calculatePayoffDate(e.loan_details)))}</div>`
+      ? `<div class="v3-mini-meta" style="color:#30D158;opacity:0.85">Vollständig abbezahlt · ${escapeHtml(fmtMonthYear(loanEndDate))}</div>`
       : `<div class="v3-mini-meta">${meta}</div>`;
     const amountEl = isPaidOff
       ? `<div class="loan-done-badge"><svg width="12" height="12"><use href="#i-check"/></svg>Abbezahlt</div>`
