@@ -46,3 +46,7 @@ Thumbs.db
 
 # Claude Code (Worktrees, Sessions, lokale Konfiguration)
 .claude/
+
+# Entwicklungstools (lokal, nicht Teil des Projekts)
+.superpowers/
+run Kopie.sh
