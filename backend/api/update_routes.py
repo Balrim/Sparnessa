@@ -1,7 +1,10 @@
+import json
 import os
 import urllib.request
-from flask import jsonify, request
+from flask import jsonify, Response
 from backend import update_state
+
+_CHUNK = 65536  # 64 KB
 
 
 def register(bp):
@@ -9,18 +12,34 @@ def register(bp):
     def update_info():
         return jsonify(update_state.state)
 
-    @bp.route('/api/download-update', methods=['POST'])
-    def download_update():
+    @bp.route('/api/download-update-stream')
+    def download_update_stream():
         url = update_state.state.get('download_url')
-        if not url:
-            return jsonify({'error': 'Kein Download-Link verfügbar'}), 400
 
-        dest = os.path.join(os.path.expanduser('~'), 'Downloads', 'Sparnessa.exe')
-        try:
-            req = urllib.request.Request(url)
-            with urllib.request.urlopen(req) as response, open(dest, 'wb') as f:
-                f.write(response.read())
-        except Exception as e:
-            return jsonify({'error': str(e), 'url': url}), 500
+        def generate():
+            if not url:
+                yield 'data: ' + json.dumps({'error': 'Kein Download-Link verfügbar'}) + '\n\n'
+                return
+            dest = os.path.join(os.path.expanduser('~'), 'Downloads', 'Sparnessa.exe')
+            try:
+                with urllib.request.urlopen(urllib.request.Request(url)) as resp:
+                    total = int(resp.headers.get('Content-Length') or 0)
+                    downloaded = 0
+                    with open(dest, 'wb') as f:
+                        while True:
+                            chunk = resp.read(_CHUNK)
+                            if not chunk:
+                                break
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            percent = int(downloaded * 100 / total) if total else -1
+                            yield 'data: ' + json.dumps({'percent': percent}) + '\n\n'
+                yield 'data: ' + json.dumps({'done': True, 'path': dest}) + '\n\n'
+            except Exception as e:
+                yield 'data: ' + json.dumps({'error': str(e)}) + '\n\n'
 
-        return jsonify({'ok': True, 'path': dest})
+        return Response(
+            generate(),
+            mimetype='text/event-stream',
+            headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'},
+        )

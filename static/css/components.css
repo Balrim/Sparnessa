@@ -840,6 +840,29 @@ button:focus-visible { outline-offset: 3px; }
   z-index: 200;
   white-space: nowrap;
   max-width: calc(100vw - 48px);
+  overflow: hidden;
+}
+.update-progress-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--separator);
+}
+.update-progress-bar {
+  height: 100%;
+  background: var(--blue);
+  width: 0%;
+  transition: width 0.25s ease;
+}
+.update-progress-bar.indeterminate {
+  width: 40%;
+  animation: update-progress-slide 1.4s ease-in-out infinite;
+}
+@keyframes update-progress-slide {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
 }
 .update-banner svg { color: var(--blue); flex-shrink: 0; }
 .update-btn {
