@@ -49,4 +49,5 @@ Thumbs.db
 
 # Entwicklungstools (lokal, nicht Teil des Projekts)
 .superpowers/
+docs/superpowers/
 run Kopie.sh
